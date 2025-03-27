@@ -251,28 +251,12 @@ public class CW {
 
 
     // ------------------------------------------------------------------------------------------------------------
-//    public static void SaveImage(String name, int[][] im) {
-//        BufferedImage image = new BufferedImage(im.length, im[0].length, BufferedImage.TYPE_BYTE_GRAY);
-//        for (int j = 0; j < im.length; j++)
-//            for (int i = 0; i < im[0].length; i++)
-//                image.setRGB(j, i, im[j][i] * 256 * 256 + im[j][i] * 256 + im[j][i]);
-//
-//        File f = new File(name);
-//        try {
-//            ImageIO.write(image, "tiff", f);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     public static void SaveImage(String name, int[][] im) {
-        BufferedImage image = new BufferedImage(im[0].length, im.length, BufferedImage.TYPE_BYTE_GRAY);
-        for (int j = 0; j < im.length; j++) {
-            for (int i = 0; i < im[0].length; i++) {
-                int value = Math.min(255, Math.max(0, im[j][i]));
-                image.setRGB(i, j, (value << 16) | (value << 8) | value);
-            }
-        }
+        BufferedImage image = new BufferedImage(im.length, im[0].length, BufferedImage.TYPE_BYTE_GRAY);
+        for (int j = 0; j < im.length; j++)
+            for (int i = 0; i < im[0].length; i++)
+                image.setRGB(j, i, im[j][i] * 256 * 256 + im[j][i] * 256 + im[j][i]);
+
         File f = new File(name);
         try {
             ImageIO.write(image, "tiff", f);
@@ -281,7 +265,7 @@ public class CW {
         }
     }
 
-    //----------------------------------------------------------------------------------------------------
+   // ------------------------------------------------------------------------------------------------------------------
 
     public static void SaveImageRGB(String name, int[][][] im) {
         BufferedImage image = new BufferedImage(im.length, im[0].length, BufferedImage.TYPE_INT_RGB);

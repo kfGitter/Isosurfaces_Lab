@@ -100,30 +100,34 @@ class Volume {
 
         for (int y = 0; y < dimY; y++) {
             for (int x = 0; x < dimX; x++) {
-                int sum = 0;
+                double sum = 0;
                 double edgeSum = 0;
 
                 for (int z = 0; z < dimZ; z++) {
-                    sum += data[z][y][x];
+                    // Instead of directly accessing data, use trilinear interpolation
+                    double interpolatedValue = trilinearInterpolation(x, y, z);
+                    sum += interpolatedValue;
 
-                    // Only calculate edge strength if we're not at borders
-                    if (z > 0 && z < dimZ-1 && y > 0 && y < dimY-1 && x > 0 && x < dimX-1) {
-                        double gx = gradient[z-1][y-1][x-1][0];
-                        double gy = gradient[z-1][y-1][x-1][1];
-                        edgeSum += Math.sqrt(gx*gx + gy*gy);
+                    // Compute edge intensity (gradient)
+                    if (z > 0 && z < dimZ - 1 && y > 0 && y < dimY - 1 && x > 0 && x < dimX - 1) {
+                        double gx = gradient[z - 1][y - 1][x - 1][0];
+                        double gy = gradient[z - 1][y - 1][x - 1][1];
+                        edgeSum += Math.sqrt(gx * gx + gy * gy);
                     }
                 }
 
-                // Combine density and edge information
-                double density = (double)sum/dimZ;
-                double edge = edgeSum/dimZ;
-                projection[y][x] = (int)(0.7 * density + 0.3 * edge);
+                // Apply contrast adjustments
+                double density = sum / dimZ;
+                double edge = edgeSum / dimZ;
+                projection[y][x] = (int) (0.7 * density + 0.3 * edge);
 
-                // Clamp to 0-255 range
-                projection[y][x] = (int)(255 * Math.log(1 + sum/dimZ) / Math.log(256));            }
+                // Normalize to 0-255
+                projection[y][x] = Math.min(255, Math.max(0, (int) (255 * Math.log(1 + projection[y][x]) / Math.log(256))));
+            }
         }
         return projection;
     }
+
 
     /**
      * This function swaps the x or y dimension with the z one, allowing projection on other faces of the volume.
